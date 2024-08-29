@@ -1,9 +1,12 @@
 package server
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"os"
+	"strings"
+	"time"
 )
 
 const (
@@ -103,7 +106,7 @@ func (server *Server) checkUsernameClient(client net.Conn) bool {
 
 	for server.isUsernameExist(username, client) {
 		server.sendToClient(client, "ERREUR : Votre nom d'utilisateur existe déjà sur le serveur \n")
-		username, err := server.catchClientUsername(client)
+		username, err = server.catchClientUsername(client)
 		if err != nil {
 			return false
 		}
@@ -112,4 +115,52 @@ func (server *Server) checkUsernameClient(client net.Conn) bool {
 	server.clients[client] = username
 	server.sendToClient(client, "[SUCCÈS] Vous êtes connecté avec succès !\n")
 	return true
+}
+
+// catchClientUsername récupère le nom d'utilisateur d'un client.
+func (server *Server) catchClientUsername(client net.Conn) (string, error) {
+
+	var usernameBuffer [4096]byte
+	length, err := client.Read(usernameBuffer[:])
+	if err != nil {
+		server.addLog(fmt.Sprintf("Le client depuis %s a interrompu la saisie du nom d'utilisateur\n", client.RemoteAddr()))
+		return "", errors.New("saisie du client interrompue")
+	}
+	return strings.TrimSuffix(string(usernameBuffer[:length]), "\n"), nil
+}
+
+func (server *Server) isUsernameExist(username string, client net.Conn) bool {
+	for _, existUsername := range server.clients {
+		if existUsername == username && server.clients[client] != existUsername {
+			return true
+		}
+	}
+	return false
+}
+
+func (server *Server) addLog(line string) {
+	file, err := os.OpenFile("souche.txt", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0600)
+	if err != nil {
+		fmt.Println(ColorRed, "ERREUR :", err, ColorReset)
+		return
+	}
+	line = dateTimeLine(line)
+	_, err = file.WriteString(line)
+	if err != nil {
+		fmt.Println(ColorRed, "ERREUR :", err, ColorReset)
+		return
+	}
+	fmt.Println(line)
+	defer file.Close()
+}
+
+func (server *Server) sendChatHistory(client net.Conn) {
+	for _, message := range server.chatHistory {
+		server.sendToClient(client, (message))
+	}
+}
+
+func dateTimeLine(text string) string {
+	datetimeNow := time.Now().Format("02/01/2006 15:04:05")
+	return fmt.Sprintf("[%s] %s", datetimeNow, text)
 }
