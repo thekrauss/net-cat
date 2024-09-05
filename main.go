@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"net-cat/client"
 	"net-cat/server"
+
 	"os"
 	"strings"
 )
@@ -33,11 +35,12 @@ const (
 )
 
 func usage() {
+
 	colorReset := "\033[0m"
 	colorBlue := "\033[34m"
 
-	fmt.Println(colorBlue, "exemple pour lancer le server : go run  server", colorReset)
-	fmt.Println(colorBlue, "exemple pour lancer client : go run  client", colorReset)
+	fmt.Println(colorBlue, "exemple pour lancer le server : go run main.go server", colorReset)
+	fmt.Println(colorBlue, "exemple pour lancer client : go run main.go client", colorReset)
 }
 
 func Option() {
@@ -52,7 +55,7 @@ func Option() {
 		server := server.State(IP, PORT)
 		server.Run()
 	} else if mode == "client" {
-		client := server.State(IP, PORT)
+		client := client.State(IP, PORT)
 		client.Run()
 	} else {
 		usage()
