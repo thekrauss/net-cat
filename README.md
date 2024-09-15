@@ -19,12 +19,17 @@ The project implements the following key features:
 
 ## How It Works
 
+1. Clone the repository:
+    ```bash
+        https://github.com/thekrauss/net-cat.git
+    ```
+
 ### Server
 
 To start the server, use the following commands:
 
 ```bash
-$ go run .
+$ go run main.go server
 Listening on port: 8989
 ```
 
@@ -40,7 +45,7 @@ Listening on port: 2525
 To connect to the server, use NetCat:
 
 ```bash
-$ nc <server-ip> <port>
+$ go run main.go client
 ```
 
 When a client connects, they are greeted with a welcome message and asked for their name:
@@ -79,42 +84,6 @@ Once the client provides their name, they can start chatting with others. For ex
 - When a client **leaves**, the server informs the remaining clients.
 - **Errors** are handled both on the server and client side to ensure the system is stable.
 
-## Usage
-
-```bash
-$ go run .
-Listening on port: 8989
-
-$ nc <server-ip> 8989
-```
-
-If a port is not provided, the default port of `8989` is used. If a port is specified, the program should be started as follows:
-
-```bash
-$ go run . 2525
-```
-
-If the client attempts to connect without a valid port, an error message is displayed:
-
-```
-[USAGE]: ./TCPChat $port
-```
-
-## Allowed Packages
-
-This project is built using the following Go packages:
-
-- `io`
-- `log`
-- `os`
-- `fmt`
-- `net`
-- `sync`
-- `time`
-- `bufio`
-- `errors`
-- `strings`
-- `reflect`
 
 ## Project Structure
 
@@ -122,24 +91,6 @@ This project is built using the following Go packages:
 - **Client:** Each client can connect to the server, send messages, and receive messages from other clients.
 - **Concurrency:** The project uses **Goroutines** to manage multiple client connections simultaneously.
 - **Synchronization:** **Channels** or **Mutexes** are used to manage communication between the Goroutines.
-
-## Installation and Running
-
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/yourusername/tcp-chat.git
-    cd tcp-chat
-    ```
-
-2. Run the server:
-    ```bash
-    go run .
-    ```
-
-3. Use NetCat to connect clients to the server:
-    ```bash
-    nc <server-ip> <port>
-    ```
 
 ## Future Improvements
 
